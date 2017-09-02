@@ -21,7 +21,7 @@ public class GameGridModel extends AbstractTableModel {
     }
 
     public GameGridModel() {
-        this.hero = new Hero();
+        this.hero = Hero.getInstance();
         this.heroX = 5;
         this.objetos[9][heroX] = hero;
     }
