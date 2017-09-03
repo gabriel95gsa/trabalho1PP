@@ -9,8 +9,23 @@ import javax.swing.ImageIcon;
  */
 
 public class Hero extends GameItem {
-
+    
+    private static Hero instance;
+    
     private boolean die;
+
+    // Aplicado o padrão Singleton para instanciar o herói
+    private Hero() {
+        
+    }
+    
+    public synchronized static Hero getInstance(){
+        if(instance == null) {
+            instance = new Hero();
+        }
+        
+        return instance;
+    }
 
     @Override
     public ImageIcon getImagem() {
