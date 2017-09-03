@@ -55,11 +55,15 @@ public class GUIGame extends JFrame {
             @Override
             public void run() {
                 try {
+                    // Opções de seleção de armas
+                    Object[] opcoesArmas = {"Bumerangue", "Míssel"};
+                    int opcao = JOptionPane.showOptionDialog(null, "Escolha a arma que deseja utilizar", "Selecionar arma", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, opcoesArmas, opcoesArmas[0]);
+                    
                     int rodada = 0;
                     while (true) {
                         // lerInputs
                         switch (lastKey) {
-                            case 32: model.heroShot(); break;
+                            case 32: model.heroShot(opcao); break;
                             case 37: model.heroGoLeft(); break;
                             case 39: model.heroGoRight(); break;
                         }

@@ -5,6 +5,7 @@ import javax.swing.table.AbstractTableModel;
 /**
  *
  * @author wagnnersousa & adilsonv77
+ * editado Gabriel Schenkel, Cristiano Flores, Julio Vinicius
  */
 
 @SuppressWarnings("serial")
@@ -21,7 +22,7 @@ public class GameGridModel extends AbstractTableModel {
     }
 
     public GameGridModel() {
-        this.hero = new Hero();
+        this.hero = Hero.getInstance();
         this.heroX = 5;
         this.objetos[9][heroX] = hero;
     }
@@ -92,12 +93,16 @@ public class GameGridModel extends AbstractTableModel {
         objetos[9][heroX] = hero;
     }
 
-    public void heroShot() {
+    /*
+     * Parâmetros para tipo de tiro/arma:
+     * 0: bumerangue, 1: míssel
+     */
+    public void heroShot(int opcaoArma) {
         /* Existe um erro que o tiro começa uma linha acima... isso é um problema que pode ser resolvido 
          * usando Padrões de Projeto ;)
          */
-
-        Shot tiro = new Shot(heroX, 8, this);
+        
+        Shot tiro = new Shot(heroX, 8, this, opcaoArma);
         objetos[8][heroX] = tiro;
     }
     
