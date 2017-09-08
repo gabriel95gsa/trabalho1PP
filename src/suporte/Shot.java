@@ -26,7 +26,7 @@ public class Shot extends GameItem {
         this.model = model;
         this.armaSelecionada = armaSelecionada;
     }
-
+    
     @Override
     public ImageIcon getImagem() {
         GunFactory gun;

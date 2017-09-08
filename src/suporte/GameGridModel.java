@@ -1,5 +1,7 @@
 package suporte;
 
+import observers.ObservadorGame;
+import javax.swing.JOptionPane;
 import javax.swing.table.AbstractTableModel;
 
 /**
@@ -16,6 +18,9 @@ public class GameGridModel extends AbstractTableModel {
 
     private Hero hero;
     private int heroX;
+    
+    private int score;
+    private int vidas;
 
     public GameItem[][] getObjetosNovoEstado() {
         return objetosNovoEstado;
@@ -25,6 +30,8 @@ public class GameGridModel extends AbstractTableModel {
         this.hero = Hero.getInstance();
         this.heroX = 5;
         this.objetos[9][heroX] = hero;
+        this.score = 0;
+        this.vidas = 0;
     }
 
     @Override
@@ -42,6 +49,30 @@ public class GameGridModel extends AbstractTableModel {
         GameItem obj = objetos[lin][col];
         return (obj == null ? null : obj.getImagem());
     }
+    
+    public int getScore() {
+        return this.score;
+    }
+    
+    public int getVidas() {
+        return this.vidas;
+    }
+    
+    public void addScore(int valor) {
+        this.score += valor;
+    }
+    
+    /*
+     * Altera o valor da vida do objeto Hero caso o jogo tenha sido carregado,
+     * a partir de outro salvo
+     */
+    public void setVidaHeroInstance(int valor) {
+        this.hero.setVidas(valor);
+    }
+    
+    public void setVida(int valor) {
+        this.vidas = valor;
+    }
 
     public void addObjeto(GameItem obj, int lin, int col) {
         if (objetos[lin][col] == null)
@@ -49,6 +80,10 @@ public class GameGridModel extends AbstractTableModel {
     }
 
     public void atualizar() throws Exception {
+        if(this.vidas >= 0) {
+            objetos[9][heroX] = hero;
+        }
+        
         for (int lin = 0; lin < 10; lin++) {
             for (int col = 0; col < 10; col++) {
                 objetosNovoEstado[lin][col] = objetos[lin][col];
@@ -59,6 +94,11 @@ public class GameGridModel extends AbstractTableModel {
             for (int col = 0; col < 10; col++) {
                 if (objetos[lin][col] != null) {
                     objetos[lin][col].atualizar();
+                    if(objetos[lin][col] instanceof Hero) {
+                        this.setVida(objetos[lin][col].getVidas());
+                    } else if(objetos[lin][col] instanceof Enemy) {
+                        this.addScore(objetos[lin][col].getHitScore());
+                    }
                 }
             }
         }

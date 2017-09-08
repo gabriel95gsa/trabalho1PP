@@ -1,98 +1,114 @@
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.util.Random;
+import gamewindows.GamePanel;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.beans.PropertyVetoException;
 
 import javax.swing.JFrame;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
-
-import suporte.Enemy;
-import suporte.GameGridModel;
-import suporte.GameGridRenderer;
-
 
 @SuppressWarnings("serial")
 public class GUIGame extends JFrame {
 
     public GUIGame() {
-        setTitle("Trabalho 1 55PPR");
-        setSize(510, 530);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
-        setResizable(false);
+        setSize(900, 690);
+        setLocation(220, 20);
+        
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent evento) {
+                if(painelGame != null) {
+                    try {
+                        painelGame.setClosed(true);
+                    } catch (PropertyVetoException ex) {
+                        JOptionPane.showMessageDialog(null, ex);
+                    }
+                    painelGame.salvarArquivoJogo();
+                }
+            }
+        });
+        
         initComponents();
     }
-
+    
+    private GamePanel painelGame;
+    
+    // Variables declaration - do not modify                     
+    private javax.swing.JDesktopPane jDesktopPane1;
+    private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenu jMenu2;
+    private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuItem2;
+    // End of variables declaration
+    
+    // Listeners
+    ActionListener action = new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            painelGame = new GamePanel();
+            jDesktopPane1.add(painelGame);
+            painelGame.setVisible(true);
+        }
+    };
+    
     private int lastKey;
 
     private void initComponents() {
-        final GameGridModel model = new GameGridModel();
+        jDesktopPane1 = new javax.swing.JDesktopPane();
+        jMenuBar1 = new javax.swing.JMenuBar();
+        jMenu1 = new javax.swing.JMenu();
+        jMenuItem1 = new javax.swing.JMenuItem();
+        JMenuItem jMenuItem3 = new javax.swing.JMenuItem();
+        jMenu2 = new javax.swing.JMenu();
+        jMenuItem2 = new javax.swing.JMenuItem();
 
-        final JTable espaco = new JTable(model);
-        for (int x=0;x<espaco.getColumnModel().getColumnCount();x++) {
-            espaco.getColumnModel().getColumn(x).setWidth(50);
-            espaco.getColumnModel().getColumn(x).setMinWidth(50);
-            espaco.getColumnModel().getColumn(x).setMaxWidth(50);
-        }
-        espaco.setRowHeight(50);
-        espaco.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        espaco.setDefaultRenderer(Object.class, new GameGridRenderer());
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        getContentPane().add(espaco);
+        javax.swing.GroupLayout jDesktopPane1Layout = new javax.swing.GroupLayout(jDesktopPane1);
+        jDesktopPane1.setLayout(jDesktopPane1Layout);
+        jDesktopPane1Layout.setHorizontalGroup(
+            jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 400, Short.MAX_VALUE)
+        );
+        jDesktopPane1Layout.setVerticalGroup(
+            jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 277, Short.MAX_VALUE)
+        );
+        
+        jMenu1.setIcon(new javax.swing.ImageIcon("brick.png")); // NOI18N
+        jMenu1.setText("Jogo");
 
-        espaco.addKeyListener(new KeyAdapter(){
+        jMenuItem3.setIcon(new javax.swing.ImageIcon("joystick.png")); // NOI18N
+        jMenuItem3.setText("Jogar");
+        jMenuItem3.addActionListener(action);
+        jMenu1.add(jMenuItem3);
+        
+        jMenuBar1.add(jMenu1);
 
-            @Override
-            public void keyReleased(KeyEvent e) {
-                lastKey = e.getKeyCode();
-            }
+        jMenu2.setIcon(new javax.swing.ImageIcon("award_star_gold_1.png")); // NOI18N
+        jMenu2.setText("Pontuação");
 
-        });
+        jMenuItem2.setIcon(new javax.swing.ImageIcon("application_view_detail.png")); // NOI18N
+        jMenuItem2.setText("Score");
+        jMenu2.add(jMenuItem2);
 
-        final Random sorteio = new Random();
-        Thread t = new Thread() {
-            @Override
-            public void run() {
-                try {
-                    // Opções de seleção de armas
-                    Object[] opcoesArmas = {"Bumerangue", "Míssel"};
-                    int opcao = JOptionPane.showOptionDialog(null, "Escolha a arma que deseja utilizar", "Selecionar arma", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, opcoesArmas, opcoesArmas[0]);
-                    
-                    int rodada = 0;
-                    while (true) {
-                        // lerInputs
-                        switch (lastKey) {
-                            case 32: model.heroShot(opcao); break;
-                            case 37: model.heroGoLeft(); break;
-                            case 39: model.heroGoRight(); break;
-                        }
-                        lastKey = 0;
+        jMenuBar1.add(jMenu2);
 
-                        // mudar o estado dos objetos
-                        model.atualizar();
+        setJMenuBar(jMenuBar1);
 
-                        if (rodada % 5 == 0) {
-                            int col = sorteio.nextInt(10);
-                            model.addObjeto(new Enemy(0, col, model), 0, col);
-                            rodada = 0;
-                        }
-
-                        // renderizar
-                        espaco.repaint();
-
-                        Thread.sleep(500);
-                    }
-                } catch (Exception e) {
-                    espaco.repaint();
-                    JOptionPane.showMessageDialog(null, e.getMessage());
-                    if (e.getMessage().equals("Fim de Jogo")) 
-                        System.exit(0);
-                }
-            }
-        };
-        t.start();
-
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jDesktopPane1)
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jDesktopPane1)
+        );
     }
 
     public static void main(String[] args) {
