@@ -25,9 +25,11 @@ import suporte.GameGridModel;
 import suporte.GameGridRenderer;
 import observers.ObservadorEnemy;
 import adapters.JogoSalvo;
-import static com.sun.java.accessibility.util.AWTEventMonitor.addWindowListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import commands.ExecutarShot;
+import commands.MoverHeroDireita;
+import commands.MoverHeroiEsquerda;
+import gameitenslogs.HeroLog;
+import invokers.Controle;
 
 /**
  *
@@ -54,6 +56,7 @@ public class GamePanel extends JInternalFrame {
     public JLabel labelVidas;
     public JLabel labelScore;
     private final GameGridModel model = new GameGridModel();
+    private Controle controle = new Controle(); // Objeto Controle para adicionar os commands das ações executadas
     
     private void initComponents() {
         this.labelVidas = new JLabel("Vidas: " + this.model.getVidas());
@@ -73,7 +76,7 @@ public class GamePanel extends JInternalFrame {
         espaco.setDefaultRenderer(Object.class, new GameGridRenderer());
         
         getContentPane().add(espaco);
-                
+
         espaco.addKeyListener(new KeyAdapter(){
 
             @Override
@@ -83,6 +86,9 @@ public class GamePanel extends JInternalFrame {
 
         });
 
+        // Objeto HeroLog para adicionar aos commands
+        HeroLog logHero = new HeroLog();
+        
         final Random sorteio = new Random();
         t = new Thread() {
             @Override
@@ -123,9 +129,24 @@ public class GamePanel extends JInternalFrame {
                     while (true) {
                         // lerInputs
                         switch (lastKey) {
-                            case 32: model.heroShot(opcao); break;
-                            case 37: model.heroGoLeft(); break;
-                            case 39: model.heroGoRight(); break;
+                            case 32: 
+                                model.heroShot(opcao);
+                                // Cria e adiciona o command do log para a ação
+                                ExecutarShot exeShot = new ExecutarShot(logHero);
+                                controle.addCommand(exeShot);
+                                break;
+                            case 37: 
+                                model.heroGoLeft();
+                                // Cria e adiciona o command do log para a ação
+                                MoverHeroiEsquerda moverEsq = new MoverHeroiEsquerda(logHero);
+                                controle.addCommand(moverEsq);
+                                break;
+                            case 39: 
+                                model.heroGoRight();
+                                // Cria e adiciona o command do log para a ação
+                                MoverHeroDireita moverDir = new MoverHeroDireita(logHero);
+                                controle.addCommand(moverDir);
+                                break;
                         }
                         lastKey = 0;
 
@@ -171,6 +192,9 @@ public class GamePanel extends JInternalFrame {
      */
     public void salvarArquivoJogo() {
         t.stop();
+        
+        // Executa todos os comandos imprimindo-os no arquivo de log
+        this.controle.executarCommands();
         
         // Joption para salvar jogo
         int opcao = JOptionPane.showOptionDialog(null, "Você deseja salvar este jogo?", "Salvar jogo", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, opcoes, opcoes[0]);
