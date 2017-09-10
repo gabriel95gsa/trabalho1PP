@@ -1,7 +1,5 @@
-package gamewindows;
+package gamefacades;
 
-//import java.awt.event.ActionEvent;
-//import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.Random;
@@ -19,8 +17,9 @@ import java.io.BufferedReader;
 import java.util.Date;
 import java.text.SimpleDateFormat;
 
-
-import suporte.Enemy;
+import prototypes.EnemyPrototype;
+import enemies.EnemyMonsterProtype;
+import enemies.EnemyDiscoVoadorPrototype;
 import suporte.GameGridModel;
 import suporte.GameGridRenderer;
 import observers.ObservadorEnemy;
@@ -28,8 +27,10 @@ import adapters.JogoSalvo;
 import commands.ExecutarShot;
 import commands.MoverHeroDireita;
 import commands.MoverHeroiEsquerda;
+import enemies.EnemyMonsterProtype;
 import gameitenslogs.HeroLog;
 import invokers.Controle;
+import prototypes.EnemyPrototype;
 
 /**
  *
@@ -37,10 +38,9 @@ import invokers.Controle;
  */
 
 @SuppressWarnings("serial")
-public class GamePanel extends JInternalFrame {
+public class GameFacade extends JInternalFrame implements GameOpcoes {
     
-    public GamePanel() {
-        setTitle("Trabalho 1 55PPR");
+    public GameFacade() {
         setSize(800, 600);
         setLocation(40, 15);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -90,6 +90,7 @@ public class GamePanel extends JInternalFrame {
         HeroLog logHero = new HeroLog();
         
         final Random sorteio = new Random();
+        final Random sorteioEnemy = new Random(); // sorteia os Enemies que aparecem no jogo
         t = new Thread() {
             @Override
             public void run() {
@@ -125,6 +126,13 @@ public class GamePanel extends JInternalFrame {
                     // Joption para seleção da arma
                     int opcao = JOptionPane.showOptionDialog(null, "Escolha a arma que deseja utilizar", "Selecionar arma", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, opcoesArmas, opcoesArmas[0]);
                     
+                    /*
+                     * Instancia um objeto concreto de EnemyMonsterProtype e EnemyDiscoVoadorPrototype para clonar
+                     * outros objetos durante a execução do jogo
+                     */
+                    EnemyMonsterProtype enemyMonster = new EnemyMonsterProtype();
+                    EnemyDiscoVoadorPrototype enemyDiscoVoador = new EnemyDiscoVoadorPrototype();
+                    
                     int rodada = 0;
                     while (true) {
                         // lerInputs
@@ -158,12 +166,21 @@ public class GamePanel extends JInternalFrame {
                         labelVidas.setText("Vidas: " + model.getVidas());
 
                         if (rodada % 5 == 0) {
-                            int col = sorteio.nextInt(10);
-                            Enemy oEnemy = new Enemy(0, col, model);
+                            int col = sorteio.nextInt(10); // coluna na qual o Enemy será posicionado
+                            EnemyPrototype novoEnemy;
+                            if((sorteioEnemy.nextInt(2) % 2) == 0) {
+                                novoEnemy = enemyMonster.clonar();
+                            } else {
+                                novoEnemy = enemyDiscoVoador.clonar();
+                            }
+                            // Seta as propriedades do Enemy
+                            novoEnemy.setY(0);
+                            novoEnemy.setX(col);
+                            novoEnemy.setModel(model);
                             // Observador par atualizar score e vidas
                             ObservadorEnemy obs = new ObservadorEnemy();
-                            oEnemy.anexar(obs);
-                            model.addObjeto(oEnemy, 0, col);
+                            novoEnemy.anexar(obs);
+                            model.addObjeto(novoEnemy, 0, col);
                             rodada = 0;
                         }
 
@@ -184,12 +201,13 @@ public class GamePanel extends JInternalFrame {
             }
         };
         t.start();
-
+        
     }
 
     /*
      * Cria um arquivo com os dados do jogo salvo
      */
+    @Override
     public void salvarArquivoJogo() {
         t.stop();
         

@@ -1,10 +1,10 @@
-package gamewindows;
+package gamefacades;
 
 /**
  *
  * @Gabriel Schenkel, Cristiano Flores, Julio Vinicius
  */
-public interface GamePanelPadrao {
+public interface GameOpcoes {
     
     /*
      * Função que todas as classes de jogos possuem

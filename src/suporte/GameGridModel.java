@@ -3,6 +3,7 @@ package suporte;
 import observers.ObservadorGame;
 import javax.swing.JOptionPane;
 import javax.swing.table.AbstractTableModel;
+import prototypes.EnemyPrototype;
 
 /**
  *
@@ -96,7 +97,7 @@ public class GameGridModel extends AbstractTableModel {
                     objetos[lin][col].atualizar();
                     if(objetos[lin][col] instanceof Hero) {
                         this.setVida(objetos[lin][col].getVidas());
-                    } else if(objetos[lin][col] instanceof Enemy) {
+                    } else if(objetos[lin][col] instanceof EnemyPrototype) {
                         this.addScore(objetos[lin][col].getHitScore());
                     }
                 }

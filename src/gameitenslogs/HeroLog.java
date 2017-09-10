@@ -85,7 +85,6 @@ public class HeroLog {
                 this.tagPai.setAttribute("data", dataFormatada + " " + horaFormatada);
 
                 // Cria a tag log, filha da tag partida
-                JOptionPane.showMessageDialog(null, this.textoLog);
                 Element tagLog = document.createElement("log");
                 tagLog.setAttribute("acao", this.textoLog);
                 this.tagPai.appendChild(tagLog);

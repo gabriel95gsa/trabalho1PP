@@ -1,6 +1,7 @@
-import gamewindows.GamePanel;
+import gamefacades.GameFacade;
 import invokers.Controle;
 import commands.*;
+import gamefacades.ScoreFacade;
 import gameitenslogs.HeroLog;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,6 +17,7 @@ import javax.swing.JOptionPane;
 public class GUIGame extends JFrame {
 
     public GUIGame() {
+        setTitle("Trabalho 1 55PPR");
         setSize(900, 690);
         setLocation(220, 20);
         
@@ -36,7 +38,7 @@ public class GUIGame extends JFrame {
         initComponents();
     }
     
-    private GamePanel painelGame;
+    private GameFacade painelGame;
     
     // Variables declaration - do not modify                     
     private javax.swing.JDesktopPane jDesktopPane1;
@@ -48,12 +50,21 @@ public class GUIGame extends JFrame {
     // End of variables declaration
     
     // Listeners
-    ActionListener action = new ActionListener() {
+    ActionListener abrirGame = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
-            painelGame = new GamePanel();
+            painelGame = new GameFacade();
             jDesktopPane1.add(painelGame);
             painelGame.setVisible(true);
+        }
+    };
+    
+    ActionListener abrirScore = new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            ScoreFacade painelScore = new ScoreFacade();
+            jDesktopPane1.add(painelScore);
+            painelScore.setVisible(true);
         }
     };
     
@@ -86,16 +97,17 @@ public class GUIGame extends JFrame {
 
         jMenuItem3.setIcon(new javax.swing.ImageIcon("joystick.png")); // NOI18N
         jMenuItem3.setText("Jogar");
-        jMenuItem3.addActionListener(action);
+        jMenuItem3.addActionListener(abrirGame);
         jMenu1.add(jMenuItem3);
         
         jMenuBar1.add(jMenu1);
 
         jMenu2.setIcon(new javax.swing.ImageIcon("award_star_gold_1.png")); // NOI18N
-        jMenu2.setText("Pontuação");
+        jMenu2.setText("Score");
 
         jMenuItem2.setIcon(new javax.swing.ImageIcon("application_view_detail.png")); // NOI18N
-        jMenuItem2.setText("Score");
+        jMenuItem2.setText("Histório de Score");
+        jMenuItem2.addActionListener(abrirScore);
         jMenu2.add(jMenuItem2);
 
         jMenuBar1.add(jMenu2);
